@@ -134,7 +134,7 @@ private[this] class RestClientImpl(wsClient: StandaloneAhcWSClient)(implicit sys
     }
   }
 
-  private[Client] def end(): Unit = {
+  def end(): Unit = {
     system.terminate()
     wsClient.close()
   }

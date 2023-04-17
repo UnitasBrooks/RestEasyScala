@@ -5,14 +5,23 @@ Looking through options for REST clients in Scala I found many that were way ove
 
 ### Usage
 #### Run your own client
+```scala
   val client = RestClient.defaultClient
-  
   client.get(...)
-  
   client.end()
+```
+
  
 #### Run a client which cleans itself up
-  RestClient.withDefaultClient(client => client.get(...))
+```scala
+  RestClient.withDefaultClient { client => 
+    val getResult = client.get(...)
+    val postResult = client.post(...)
+  }
+```
+
  
-#### Create a client per call, cleaning up after each  
+#### Create a client per call, cleaning up after each 
+```scala
   RestClient.get(...)
+```
