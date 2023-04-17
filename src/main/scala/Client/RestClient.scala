@@ -18,7 +18,7 @@ import scala.util.{Failure, Success, Try}
  * Usage:
  *  val client = RestClient.defaultClient
  *  client.get(...)
- *  client.end()
+ *  client.terminate()
  *
  *  ~OR~
  *  RestClient.withDefaultClient(client => client.get(...))
@@ -32,7 +32,7 @@ sealed trait RestClient {
   def post(url: String, body: String, headers: Map[String, String], timeoutSeconds: Int): Try[String]
   def put(url: String, body: String, headers: Map[String, String], timeoutSeconds: Int): Try[String]
   def delete(url: String, headers: Map[String, String], timeoutSeconds: Int): Try[String]
-  def end(): Unit
+  def terminate(): Unit
 }
 
 object RestClient {
@@ -48,7 +48,7 @@ object RestClient {
     try {
       f(client)
     } finally {
-      client.end()
+      client.terminate()
     }
   }
 
@@ -77,7 +77,7 @@ object RestClient {
   }
 }
 
-private[this] class RestClientImpl(wsClient: StandaloneAhcWSClient)(implicit system: ActorSystem) extends RestClient {
+private[this] class RestClientImpl(wsClient: StandaloneAhcWSClient)(implicit actor: ActorSystem) extends RestClient {
   def get(url: String, headers: Map[String, String] = Map(), timeoutSeconds: Int = 30): Try[String] = {
     await(wsGet(url, headers), timeoutSeconds)
   }
@@ -134,8 +134,8 @@ private[this] class RestClientImpl(wsClient: StandaloneAhcWSClient)(implicit sys
     }
   }
 
-  def end(): Unit = {
-    system.terminate()
+  def terminate(): Unit = {
+    actor.terminate()
     wsClient.close()
   }
 }

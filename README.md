@@ -8,7 +8,7 @@ Looking through options for REST clients in Scala I found many that were way ove
 ```scala
   val client = RestClient.defaultClient
   client.get(...)
-  client.end()
+  client.terminate()
 ```
 
  
